@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Projekat.Models.View;
 
 namespace Projekat.Models.Database
 {
@@ -18,6 +20,20 @@ namespace Projekat.Models.Database
 
 
 
+    }
+
+    public class UserProfile : Profile {
+        public UserProfile(){
+            base.CreateMap<RegisterModel, User>()
+            .ForMember (
+                destination => destination.Email,
+                options => options.MapFrom( data => data.email)
+            )
+             .ForMember (
+                destination => destination.UserName,
+                options => options.MapFrom( data => data.username)
+            ).ReverseMap();
+        }
     }
 
     // public class UserConfiguration : IEntityTypeConfiguration<User>{ 

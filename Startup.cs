@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Projekat.Factories;
 using Projekat.Models.Database;
 
 namespace Projekat
@@ -29,7 +31,24 @@ namespace Projekat
             services.AddDbContext<AuctionContext>(
                 options => options.UseSqlServer(this.Configuration.GetConnectionString("db")));
 
-            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AuctionContext>();
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 0;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+            })
+                .AddEntityFrameworkStores<AuctionContext>();
+            services.ConfigureApplicationCookie (options => {
+                options.LoginPath = "/User/Login";
+                options.AccessDeniedPath = "/Home/Error";
+            });
+            services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddAutoMapper(typeof(Startup));
+
+            services.AddScoped<IUserClaimsPrincipalFactory<User>,  ClaimFactory> ();
             services.AddControllersWithViews();
 
         }
@@ -52,6 +71,8 @@ namespace Projekat
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

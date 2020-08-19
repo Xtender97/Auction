@@ -1,0 +1,59 @@
+@model Projekat.Models.View.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+@section Scripts {
+    @{ await Html.RenderPartialAsync ( "_ValidationScriptsPartial" ); }
+}
+
+<h1>
+    Register
+</h1>
+<div class="row"> 
+    <div class="col-xl-4">
+        <form asp-action="Register" asp-controller="User">
+            <div asp-validation-summary="ModelOnly" class=" text-danger"></div>
+            <div class="form-group">
+                <label asp-for="firstName" class="controll-label"></label>
+                <input asp-for="firstName"  class="form-control">
+                <span  asp-validation-for="firstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="lastName" class="controll-label"></label>
+                <input asp-for="lastName"  class="form-control">
+                <span  asp-validation-for="lastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="gender" class="controll-label"></label>
+                <input asp-for="gender" type="radio" name="gender" value="male" checked /> Male
+                <input asp-for="gender" type="radio" name="gender" value="female" /> Female
+                <span  asp-validation-for="gender" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="email" class="controll-label"></label>
+                <input asp-for="email"  class="form-control">
+                <span  asp-validation-for="email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="username" class="controll-label"></label>
+                <input asp-for="username"  class="form-control">
+                <span  asp-validation-for="username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="password" class="controll-label"></label>
+                <input asp-for="password"  class="form-control">
+                <span  asp-validation-for="password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="confirmPassword" class="controll-label"></label>
+                <input asp-for="confirmPassword"  class="form-control">
+                <span  asp-validation-for="confirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Register">
+            </div>
+        </form>
+    </div>
+</div>

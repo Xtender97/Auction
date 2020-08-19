@@ -1,0 +1,27 @@
+@using Microsoft.AspNetCore.Identity
+@using Projekat.Models.Database
+@using System.Security.Claims
+@inject SignInManager<User> signInManager
+
+@{ 
+    string fullName = "";
+    foreach(Claim claim in User.Claims){
+        if(claim.Type.Equals("fullName")){
+            fullName = claim.Value;
+            break;
+        }
+    }
+    
+}
+
+<ul class="navbar-nav">
+    @if(signInManager.IsSignedIn( User)){
+        <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Register">Welcome @fullName</a></li>
+
+    }
+    else{
+        <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Register">Register</a></li>
+        <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Login">Login</a></li>
+
+    }
+</ul>
