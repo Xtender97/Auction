@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Projekat.Models.Database;
 
 namespace Projekat.Migrations
 {
     [DbContext(typeof(AuctionContext))]
-    partial class AuctionContextModelSnapshot : ModelSnapshot
+    [Migration("20200820064449_addedTokensAndActivityToUser")]
+    partial class addedTokensAndActivityToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,15 +50,15 @@ namespace Projekat.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3ee2044e-0d5a-49f7-9c79-9fbd43a70ceb",
-                            ConcurrencyStamp = "85a52474-bf39-4b3e-adeb-9936bd0c2480",
+                            Id = "f253b621-a826-4851-ad31-aeaecc40c7c9",
+                            ConcurrencyStamp = "1a11d977-0b89-4040-8e51-1f7d8ba5d5ce",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "7e635138-1c7d-450d-bfa6-dc4ab2e4cc91",
-                            ConcurrencyStamp = "19824931-bb06-4304-a7e5-b86125bb2c12",
+                            Id = "30dc0b99-49e6-4fb8-b1a4-624124aa0878",
+                            ConcurrencyStamp = "b431e131-6ea1-4f1b-bfa7-8fd50698e3a2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -164,55 +166,6 @@ namespace Projekat.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("Projekat.Models.Database.Auction", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("closingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("creationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("image")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("openingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<float>("priceIncrement")
-                        .HasColumnType("real");
-
-                    b.Property<float>("startPrice")
-                        .HasColumnType("real");
-
-                    b.Property<string>("state")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("userId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("userId");
-
-                    b.ToTable("Auction");
                 });
 
             modelBuilder.Entity("Projekat.Models.Database.User", b =>
@@ -345,15 +298,6 @@ namespace Projekat.Migrations
                     b.HasOne("Projekat.Models.Database.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Projekat.Models.Database.Auction", b =>
-                {
-                    b.HasOne("Projekat.Models.Database.User", "user")
-                        .WithMany("auctions")
-                        .HasForeignKey("userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

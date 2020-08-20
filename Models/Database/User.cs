@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +17,12 @@ namespace Projekat.Models.Database
         public string lastName { get; set; }
         [Required]
         public string gender { get; set; }
+
+        public bool isActive { get; set; }
+
+        public int tokenCount { get; set; }
+
+        public ICollection<Auction> auctions { get; set; }
 
 
 

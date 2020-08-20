@@ -26,11 +26,22 @@
 
             <div class="form-group">
                 <label asp-for="gender" class="controll-label"></label>
-                <input asp-for="gender" type="radio" name="gender" value="male" checked /> Male
-                <input asp-for="gender" type="radio" name="gender" value="female" /> Female
+                <div class="form-check">
+                    <input asp-for="gender" type="radio" name="gender" value="male" id="male" checked class="form-check-input"/> 
+                    <label class="form-check-label" for="male">
+                        Male
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="gender" type="radio" name="gender" value="female" id="female" class="form-check-input"/>
+                    <label class="form-check-label" for="female">
+                        Female
+                    </label>
+                </div>
                 <span  asp-validation-for="gender" class="text-danger"></span>
             </div>
-            
+
+        
             <div class="form-group">
                 <label asp-for="email" class="controll-label"></label>
                 <input asp-for="email"  class="form-control">

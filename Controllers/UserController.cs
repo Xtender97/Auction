@@ -68,6 +68,7 @@ namespace Projekat.Controllers
             }
 
             User user = this.mapper.Map<User>(model);
+            user.tokenCount = 0;
 
             IdentityResult result = await this.userManager.CreateAsync(user, model.password);
 
