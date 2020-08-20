@@ -3,12 +3,18 @@
 }
 @model Projekat.Models.View.AuctionModel;
 
+@if((string)@ViewData["Mode"] == "create"){
 <h1>Create Auction</h1>
 
+}
+else {
+<h1>Update Auction</h1>
+
+}
 
 <div class="row"> 
     <div class="col-xl-4">
-        <form asp-action="CreateAuction" asp-controller="Auction" enctype="multipart/form-data">
+        <form asp-action="@((string)@ViewData["Mode"] == "create"?"CreateAuction":"UpdateAuction")" asp-controller="Auction" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class=" text-danger"></div>
             <div class="form-group">
                 <label asp-for="name" class="controll-label"></label>
@@ -44,7 +50,7 @@
             </div>
             
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Register">
+                <input type="submit" class="btn btn-primary" value="@((string)@ViewData["Mode"] == "create"?"Create Auction":"Update Auction")">
             </div>
         </form>
     </div>
