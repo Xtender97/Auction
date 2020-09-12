@@ -69,14 +69,14 @@ namespace Projekat.Models.Database
             base.CreateMap<AuctionModel, Auction>()
             .ForMember(
                 destination => destination.image,
-            options => options.Ignore())
-            .ReverseMap();
+            options => options.Ignore());
+      
 
             base.CreateMap<Auction, AuctionModel>()
             .ForMember(
                 destination => destination.image,
-            options => options.Ignore())
-            .ReverseMap();
+            options => options.Ignore());
+        
         }
     }
 }

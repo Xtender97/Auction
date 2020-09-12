@@ -14,7 +14,7 @@ else {
 
 <div class="row"> 
     <div class="col-xl-4">
-        <form asp-action="@((string)@ViewData["Mode"] == "create"?"CreateAuction":"UpdateAuction")" asp-controller="Auction" enctype="multipart/form-data">
+        <form asp-action="@((string)@ViewData["Mode"] == "create"?"CreateAuction":"EditAuction")" asp-controller="Auction" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class=" text-danger"></div>
             <div class="form-group">
                 <label asp-for="name" class="controll-label"></label>
@@ -26,11 +26,21 @@ else {
                 <textarea asp-for="description"  class="form-control"></textarea>
                 <span  asp-validation-for="description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="image" class="controll-label"></label>
-                <input asp-for="image"  class="form-control">
-                <span  asp-validation-for="image" class="text-danger"></span>
-            </div>
+
+            @if((string)@ViewData["Mode"] == "create"){
+                <div class="form-group">
+                    <label asp-for="image" class="controll-label"></label>
+                    <input asp-for="image"  class="form-control">
+                    <span  asp-validation-for="image" class="text-danger"></span>
+                </div>
+            }
+            else {
+                <div class="form-group">
+                    <label asp-for="newImage" class="controll-label"></label>
+                    <input asp-for="newImage"  class="form-control">
+                    <span  asp-validation-for="newImage" class="text-danger"></span>
+                </div>
+            }
             <div class="form-group">
                 <label asp-for="startPrice" class="controll-label"></label>
                 <input asp-for="startPrice"  class="form-control">

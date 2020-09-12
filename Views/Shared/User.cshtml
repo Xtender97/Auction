@@ -5,10 +5,13 @@
 
 @{ 
     string fullName = "";
+    string role = "";
     foreach(Claim claim in User.Claims){
         if(claim.Type.Equals("fullName")){
             fullName = claim.Value;
-            break;
+        }
+        if(claim.Type.Equals(ClaimTypes.Role)){
+            role = claim.Value;
         }
     }
     
@@ -16,7 +19,17 @@
 
 <ul class="navbar-nav">
     @if(signInManager.IsSignedIn( User)){
+
+        if(role == "Admin"){
+            <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="getUsersToApprove">Users</a></li>
+            <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="getAuctionsToApprove">Approve Auctions</a></li>
+
+
+        }
+
         <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Register">Welcome @fullName</a></li>
+        <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Logout">Log Out</a></li>
+
 
     }
     else{

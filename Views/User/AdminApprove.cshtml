@@ -1,0 +1,35 @@
+@model Projekat.Models.View.AdminApproveModel
+
+@{
+    ViewData["Title"] = "User list";
+}
+
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">First Name</th>
+      <th scope="col">Last Name</th>
+      <th scope="col">Gender</th>
+      <th scope="col">Email</th>
+      <th scope="col">Deleted</th>
+      <th scope="col">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+      @foreach(Projekat.Models.Database.User user in Model.Users){
+        <tr>
+        
+            <td>@user.firstName</td>
+            <td>@user.lastName</td>
+            <td>@user.gender</td>
+            <td>@user.Email</td>
+            <td>@user.isDeleted</td>
+            <td><a class="btn btn-success" asp-controller="User" asp-action="deleteUser" asp-route-id="@user.Id">Delete</a></td>
+
+        </tr>
+      }
+    
+   
+  </tbody>
+</table>

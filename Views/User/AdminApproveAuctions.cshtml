@@ -1,14 +1,12 @@
-@{ 
-    ViewData["Title"] = "My Auctions";
+@model Projekat.Models.View.AdminApproveModel
+
+@{
+    ViewData["Title"] = "Auction list";
 }
-@using Projekat.Models.Database
-@model Projekat.Models.View.MyAuctionsModel
-
-<h1>My auctions</h1>
 
 
-    @foreach(Auction item in Model.myAuctions){
-        int index = Model.myAuctions.IndexOf(item);
+ @foreach(Projekat.Models.Database.Auction item in Model.Auctions){
+        int index = Model.Auctions.IndexOf(item);
         if(index % 4 == 0){
             if(index == 0){
                 @:<div class="row">
@@ -35,20 +33,15 @@
                     </div>
                     
                     <p class="card-text">@item.description</p>
-                        
 
                 </div>
                 <div class="card-footer">
                     <div class="d-flex justify-content-around">
-                        @if(item.state == State.DRAFT){
-                        <a asp-controller="Auction" asp-action="EditAuction" asp-route-id="@item.id" class="btn btn-primary" >Edit</a>
-                        <a asp-controller="Auction" asp-action="DeleteAuction" asp-route-id="@item.id" class="btn btn-danger">Delete</a>
-                        }
+                        <a asp-controller="Auction" asp-action="ApproveAuction" asp-route-id="@item.id" class="btn btn-primary" >Approve</a>
+                        <a asp-controller="Auction" asp-action="DeleteAuctionAdmin" asp-route-id="@item.id" class="btn btn-danger">Delete</a>
                     </div>
                 </div>
             </div>  
         </div>
         
     }
-
-   

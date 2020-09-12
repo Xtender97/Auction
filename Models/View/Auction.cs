@@ -7,6 +7,8 @@ namespace Projekat.Models.View {
 
     public class AuctionModel { 
 
+        public int id { get; set; }
+
         [Required]
         [Display(Name = "Name")]
         public string name { get; set; }
@@ -15,9 +17,11 @@ namespace Projekat.Models.View {
         [Display(Name = "Description")]
         public string description { get; set; }
 
-        [Required]
         [Display(Name = "Image")]
         public IFormFile image { get; set; }
+
+        [Display(Name = "New Image")]
+        public IFormFile newImage { get; set; }
 
 
         [Required]

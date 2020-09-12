@@ -20,6 +20,8 @@ namespace Projekat.Models.Database
 
         public bool isActive { get; set; }
 
+        public bool isDeleted { get; set; }
+
         public int tokenCount { get; set; }
 
         public ICollection<Auction> auctions { get; set; }

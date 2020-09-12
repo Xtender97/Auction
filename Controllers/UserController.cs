@@ -1,8 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Projekat.Models.Database;
 using Projekat.Models.View;
 
@@ -122,6 +126,14 @@ namespace Projekat.Controllers
             {
                 return View(model);
             }
+            User user = await this.context.Users.Where(u => u.UserName == model.username).SingleAsync();
+
+            if (user.isDeleted)
+            {
+                ModelState.AddModelError("", "Your account is deleted!");
+                return View(model);
+
+            }
             var result = await this.signInManager.PasswordSignInAsync(model.username, model.password, false, false);
 
             if (!result.Succeeded)
@@ -130,6 +142,8 @@ namespace Projekat.Controllers
                 return View(model);
             }
 
+
+
             if (model.returnUrl != null)
                 return Redirect(model.returnUrl);
             else
@@ -137,6 +151,63 @@ namespace Projekat.Controllers
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
         }
+
+
+        public async Task<IActionResult> Logout()
+        {
+
+            await this.signInManager.SignOutAsync();
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> getUsersToApprove()
+        {
+            string signedInUser = this.userManager.GetUserId(User);
+            List<User> users = await this.context.Users.Where(u => u.Id != signedInUser).ToListAsync();
+            AdminApproveModel model = new AdminApproveModel();
+            model.Users = users;
+            return View("AdminApprove", model);
+
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> getAuctionsToApprove()
+        {
+            List<Auction> auctions = await this.context.auction.Where(u => u.state == State.DRAFT).ToListAsync();
+            List<string> images = new List<string>();
+            foreach (Auction auction in auctions)
+            {
+                string image = Convert.ToBase64String(auction.image);
+                images.Add(image);
+            }
+            AdminApproveModel model = new AdminApproveModel();
+            model.Auctions = auctions;
+            model.images = images;
+            return View("AdminApproveAuctions", model);
+
+        }
+
+
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> deleteUser(string id)
+        {
+            User user = await this.context.Users.Where(u => u.Id == id).SingleAsync();
+            user.isDeleted = true;
+            this.context.Users.Update(user);
+
+            List<Auction> auctions = this.context.auction.Where(a=> a.userId == id && (a.state == State.READY ||a.state == State.OPEN)).ToList();
+
+            foreach(Auction auction in auctions){
+                auction.state = State.EXPIRED;
+                this.context.auction.Update(auction);
+            }
+            await this.context.SaveChangesAsync();
+
+            return await getUsersToApprove();
+        }
+
 
 
     }

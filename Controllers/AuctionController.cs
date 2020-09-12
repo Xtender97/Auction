@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,8 @@ namespace Projekat.Controllers
 
         }
 
+        // FILE TYPE CHECKER HELPER METOD
+
         private bool IsValidFileType(string fileName)
         {
             string[] extensions = { "jpeg", "jpg", "png" };
@@ -49,7 +52,10 @@ namespace Projekat.Controllers
             return false;
         }
 
+        //  POST CREATE AUCTION
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAuction(AuctionModel model)
         {
 
@@ -57,11 +63,19 @@ namespace Projekat.Controllers
             {
                 return View(model);
             }
+            if (model.image == null)
+            {
+                ModelState.AddModelError("", "Image is required!");
+                ViewData["Mode"] = "create";
+                return View(model);
+
+            }
 
             string fileName = model.image.FileName;
 
             if (!IsValidFileType(fileName))
             {
+                ViewData["Mode"] = "create";
                 ModelState.AddModelError("", "Unsuported file type!");
                 return View(model);
             }
@@ -86,12 +100,14 @@ namespace Projekat.Controllers
             if (auction.creationDate >= auction.openingDate)
             {
                 ModelState.AddModelError("", "Auction can't start in the past!!!");
+                ViewData["Mode"] = "create";
                 return View(model);
             }
 
             if (auction.closingDate <= auction.openingDate)
             {
                 ModelState.AddModelError("", "Auction can't end before it starts!!!");
+                ViewData["Mode"] = "create";
                 return View(model);
             }
 
@@ -99,12 +115,13 @@ namespace Projekat.Controllers
 
             await this.context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return Redirect("/Auction/MyAuctions");
 
 
 
         }
 
+        // GET CREATE AUCTION
 
         public IActionResult CreateAuction()
         {
@@ -112,7 +129,10 @@ namespace Projekat.Controllers
             return View();
         }
 
-        public async Task<IActionResult> EditAuction(int id){
+        // GET EDIT AUCTION 
+
+        public async Task<IActionResult> EditAuction(int id)
+        {
 
             ViewData["Mode"] = "update";
             Auction auction = await this.context.auction.Where(a => a.id == id).FirstAsync();
@@ -120,26 +140,133 @@ namespace Projekat.Controllers
             return View("CreateAuction", model);
         }
 
-        public async Task<IActionResult> MyAuctions(){ 
+        //  POST EDIT AUCTION
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAuction(AuctionModel model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return View("CreateAuction", model);
+            }
+
             User loggedInUser = await this.userManager.GetUserAsync(base.User);
-            
+
+            Auction auction = this.mapper.Map<Auction>(model);
+
+            if (model.newImage != null)
+            {
+                string fileName = model.newImage.FileName;
+
+                if (!IsValidFileType(fileName))
+                {
+                    ModelState.AddModelError("", "Unsuported file type!");
+                    return View("CreateAuction", model);
+                }
+
+                using (BinaryReader reader = new BinaryReader(model.newImage.OpenReadStream()))
+                {
+
+                    auction.image = reader.ReadBytes(Convert.ToInt32(reader.BaseStream.Length));
+                };
+
+            }
+
+            if (auction.creationDate >= auction.openingDate)
+            {
+                ModelState.AddModelError("", "Auction can't start in the past!!!");
+                return View("CreateAuction", model);
+
+            }
+
+            if (auction.closingDate <= auction.openingDate)
+            {
+                ModelState.AddModelError("", "Auction can't end before it starts!!!");
+                return View("CreateAuction", model);
+
+            }
+
+            Auction auctionDB = await this.context.auction.SingleAsync(auctionDB => auctionDB.id == auction.id);
+
+            auctionDB.name = auction.name;
+            auctionDB.description = auction.description;
+            auctionDB.startPrice = auction.startPrice;
+            auctionDB.openingDate = auction.openingDate;
+            auctionDB.closingDate = auction.closingDate;
+            if (auction.image != null)
+            {
+                auctionDB.image = auction.image;
+            }
+
+
+
+
+            this.context.auction.Update(auctionDB);
+
+            await this.context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(AuctionController.MyAuctions), "Auction");
+
+        }
+
+        // DELETE AUCTION 
+
+        public async Task<IActionResult> DeleteAuction(int id)
+        {
+            var auction = await this.context.auction.SingleAsync(auction => auction.id == id);
+            auction.state = State.DELETED;
+            this.context.auction.Update(auction);
+            await this.context.SaveChangesAsync();
+            return RedirectToAction(nameof(AuctionController.MyAuctions), "Auction");
+
+        }
+
+        // GET ALL MY AUCTIONS
+
+        public async Task<IActionResult> MyAuctions()
+        {
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+
             IList<Auction> auctions = await this.context.auction.
-                Where(item => item.userId == loggedInUser.Id ).ToListAsync();
+                Where(item => item.userId == loggedInUser.Id).ToListAsync();
 
             IList<string> images = new List<string>();
 
-            foreach (Auction auction in auctions){
+            foreach (Auction auction in auctions)
+            {
                 string image = Convert.ToBase64String(auction.image);
                 images.Add(image);
             }
 
-
-            
-            MyAuctionsModel model = new MyAuctionsModel(){ 
-                myAuctions = auctions, images = images
+            MyAuctionsModel model = new MyAuctionsModel()
+            {
+                myAuctions = auctions,
+                images = images
             };
 
             return View(model);
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ApproveAuction(int id){
+            var auction = await this.context.auction.SingleAsync(auction => auction.id == id);
+            auction.state = State.READY;
+            this.context.auction.Update(auction);
+            await this.context.SaveChangesAsync();
+            return RedirectToAction(nameof(UserController.getAuctionsToApprove), "User");
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAuctionAdmin(int id){
+            var auction = await this.context.auction.SingleAsync(auction => auction.id == id);
+            auction.state = State.DELETED;
+            this.context.auction.Update(auction);
+            await this.context.SaveChangesAsync();
+            return RedirectToAction(nameof(UserController.getAuctionsToApprove), "User");
         }
     }
 }

@@ -1,0 +1,44 @@
+@{ 
+    ViewData["Title"] = "Search";
+}
+@model Projekat.Models.View.SearchModel
+
+<div class="row w-100 m-0"> 
+
+    <form class="col-xl-12 w-100 p-0 m-0">
+        <div asp-validation-summary="ModelOnly" class=" text-danger"></div>
+        <div class="row w-100">
+            <div class="form-group col-xl-3">
+                <label asp-for="keyWord" class="controll-label"></label>
+                <input asp-for="keyWord"  class="form-control" id="keyWord">
+            </div>
+            <div class="form-group col-xl-3">
+                <label asp-for="minPrice" class="controll-label"></label>
+                <input asp-for="minPrice"  class="form-control" id="minPrice">
+            </div>
+            <div class="form-group col-xl-3">
+                <label asp-for="maxPrice" class="controll-label"></label>
+                <input asp-for="maxPrice"  class="form-control" id="maxPrice">
+            </div>
+            <div class="form-group col-xl-3">
+                <label asp-for="state" class="controll-label"></label>
+                <select asp-for="state" asp-items="@Model.states" class="form-control" id="state"></select> 
+            </div>
+        </div>
+        <div class="row w-100 justify-content-end">
+            <div class="col-xl-3">
+                <button class="btn btn-primary w-100" onClick="findAuctions(0)" type="button">Find</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="row w-100">
+
+    <div class="col-xl-12 mt-5" id="foundAuctions">
+    
+    </div>
+
+    
+
+</div>
