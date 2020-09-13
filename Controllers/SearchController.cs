@@ -88,6 +88,7 @@ namespace Projekat.Controllers
                 images.Add(image);
                 if(auction.openingDate < DateTime.Now && auction.state == State.DRAFT ){
                     auction.state = State.OPEN;
+                    this.context.auction.Update(auction);
                 }
                 if(auction.closingDate < DateTime.Now && auction.state == State.OPEN){
                     // MAKE IT SOLD OR EXPIRED DEPENDING ON THE BIDDING
@@ -104,7 +105,6 @@ namespace Projekat.Controllers
                 else {
                     timers.Add(null);
                 }
-                this.context.auction.Update(auction);
             }
 
             

@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Projekat.Factories;
 using Projekat.Models.Database;
+using SignalRChat.Hubs;
 
 namespace Projekat
 {
@@ -47,6 +48,7 @@ namespace Projekat
             });
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddAutoMapper(typeof(Startup));
+            services.AddSignalR();
 
             services.AddScoped<IUserClaimsPrincipalFactory<User>,  ClaimFactory> ();
             services.AddControllersWithViews();
@@ -81,6 +83,7 @@ namespace Projekat
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<AuctionHub>("/hub");
             });
         }
     }

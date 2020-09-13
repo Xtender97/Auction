@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Projekat.Models.Database;
 
 namespace Projekat.Migrations
 {
     [DbContext(typeof(AuctionContext))]
-    partial class AuctionContextModelSnapshot : ModelSnapshot
+    [Migration("20200913085541_AddedOrders")]
+    partial class AddedOrders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,15 +50,15 @@ namespace Projekat.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a680081b-b05c-412e-8e8e-b5e21b60dcf1",
-                            ConcurrencyStamp = "113b25e0-3a00-4cc1-bd9c-5b86e5ab54d2",
+                            Id = "aa9d9b6d-6a15-4fa4-893b-c47f2d0d9895",
+                            ConcurrencyStamp = "921f9b17-189d-45a2-bd87-47be429ff778",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "855c7a69-7af2-4a9a-8a7d-fc95561242e7",
-                            ConcurrencyStamp = "53fc2db9-b125-45d5-b02c-fcb628e6ccd2",
+                            Id = "88992c79-ae9b-4399-80af-0d746746782f",
+                            ConcurrencyStamp = "3892afe3-bc07-46cc-a26d-8fbb6e81e2c3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -213,41 +215,6 @@ namespace Projekat.Migrations
                     b.HasIndex("userId");
 
                     b.ToTable("auction");
-                });
-
-            modelBuilder.Entity("Projekat.Models.Database.Bid", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("auctionId")
-                        .HasColumnType("int");
-
-                    b.Property<float>("increment")
-                        .HasColumnType("real");
-
-                    b.Property<float>("newPrice")
-                        .HasColumnType("real");
-
-                    b.Property<float>("oldPrice")
-                        .HasColumnType("real");
-
-                    b.Property<DateTime>("timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("auctionId");
-
-                    b.ToTable("bid");
                 });
 
             modelBuilder.Entity("Projekat.Models.Database.Order", b =>
@@ -419,21 +386,6 @@ namespace Projekat.Migrations
                     b.HasOne("Projekat.Models.Database.User", "user")
                         .WithMany("auctions")
                         .HasForeignKey("userId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Projekat.Models.Database.Bid", b =>
-                {
-                    b.HasOne("Projekat.Models.Database.User", "User")
-                        .WithMany("Bids")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Projekat.Models.Database.Auction", "Auction")
-                        .WithMany("Bids")
-                        .HasForeignKey("auctionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

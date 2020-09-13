@@ -26,6 +26,11 @@ namespace Projekat.Models.Database
 
         public ICollection<Auction> auctions { get; set; }
 
+        public ICollection<Order> orders { get; set; }
+
+        public ICollection<Bid> Bids { get; set; }
+
+
 
 
 

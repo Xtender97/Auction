@@ -7,6 +7,9 @@ namespace Projekat.Models.Database
     public class AuctionContext : IdentityDbContext<User>
     {
         public DbSet<Auction> auction { get; set; }
+        public DbSet<Order> order { get; set; }
+        public DbSet<Bid> bid { get; set; }
+
 
         public AuctionContext(DbContextOptions options) : base(options) { }
 
@@ -16,6 +19,7 @@ namespace Projekat.Models.Database
 
             builder.Entity<Auction>().Property(auction => auction.state).HasConversion(new EnumToStringConverter<State>());
             builder.ApplyConfiguration(new AuctionConfiguration());
+            builder.ApplyConfiguration(new OrderConfiguration());
             builder.ApplyConfiguration(new IdentityRoleConfiguration());
 
         }

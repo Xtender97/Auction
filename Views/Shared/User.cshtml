@@ -6,9 +6,13 @@
 @{ 
     string fullName = "";
     string role = "";
+    string tokens = "";
     foreach(Claim claim in User.Claims){
         if(claim.Type.Equals("fullName")){
             fullName = claim.Value;
+        }
+        if(claim.Type.Equals("tokens")){
+            tokens = claim.Value;
         }
         if(claim.Type.Equals(ClaimTypes.Role)){
             role = claim.Value;
@@ -28,6 +32,7 @@
         }
 
         <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Register">Welcome @fullName</a></li>
+        <li class="nav-item"><a  id="tokeni" class="nav-link" >@tokens</a></li>
         <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Logout">Log Out</a></li>
 
 

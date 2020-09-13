@@ -1,0 +1,73 @@
+
+
+<div class="row">
+    <div class="card-group">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">Silver Package</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                <p class="card-text">5 tokens - $5</p>
+                <input type="radio" id="five" name="package" value="5" checked="true">
+                
+            </div>
+        </div>
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">Gold Package</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                <p class="card-text">10 tokens - $10</p>
+                <input type="radio" id="ten" name="package" value="10">
+                
+            </div>
+        </div>
+    
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">Platinum Package</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                <p class="card-text">20 tokens - $20</p>
+                <input type="radio" id="twenty" name="package" value="20">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mt-5">
+
+<div id="paypal-button"></div>
+
+</div>
+<script src="https://www.paypal.com/sdk/js?client-id=AZMGUK7HS95q1YmqHezvgtfBcHW1Ya5HnUVV8c5wXffdetbic-RQID0qMU5PEmxBPYzBcmkZwubliqJr">
+
+</script>
+
+<script>
+    paypal.Buttons(
+    
+    {
+        createOrder: function(data, actions) {
+        
+            let package = document.querySelector('input[name="package"]:checked').value;
+            console.log(package);
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: package
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            console.log(data);
+
+            return actions.order.capture().then(addOrder);
+        }
+    }
+
+
+
+
+    ).render("#paypal-button")
+</script>

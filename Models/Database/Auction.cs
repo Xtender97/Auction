@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,9 @@ namespace Projekat.Models.Database
 
         [Required]
         public string userId { get; set; }
+
+        public ICollection<Bid> Bids { get; set; }
+
 
 
     }

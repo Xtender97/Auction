@@ -1,0 +1,36 @@
+@model Projekat.Models.View.PaymentsModel
+
+@if(Model.Orders.Count > 0){
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Date</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Price</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+      @foreach(Projekat.Models.Database.Order order in Model.Orders){
+        <tr>
+        
+            <td>@order.id</td>
+            <td>@order.orderDate</td>
+            <td>@order.amount</td>
+            <td>$@order.price</td>
+            
+        </tr>
+      }
+    
+   
+  </tbody>
+</table>
+
+<div class="row mt-5 ">
+    <span>Current Page @Model.pageNumber <a  class="btn btn-link" asp-controller="Payment" asp-action="Payments" asp-route-page="@Model.pageNumber">Next ></a></span>
+</div>
+}
+else{
+    <h1>There is no more orders!!!</h1>
+}

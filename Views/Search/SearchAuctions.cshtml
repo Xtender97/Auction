@@ -8,6 +8,7 @@
     window.onload = timer();
 
 </script>
+
 <div>
 
 
@@ -65,9 +66,10 @@ else{
                     <div class="card-footer">
                         <div class="d-flex justify-content-around">
                             
-                            <a asp-controller="Auction" asp-action="EditAuction" asp-route-id="@item.id" class="btn btn-success">Bid</a>
-                            
+                            <button onClick="bid(@item.id, @item.priceIncrement, @item.startPrice, @Model.pageNumber)" class="btn btn-success">Bid</button>
                         </div>
+                        <div class="auctionId" style="display:none">@item.id</div>
+
                     </div>
                 </div>  
             </div>
@@ -76,7 +78,7 @@ else{
             }
         }
         <div class="row mt-5 ">
-                <span>Current Page @Model.pageNumber <button type="button" class="btn btn-link" onClick="findAuctions(@Model.pageNumber)">Next ></button></span>
+                <span>Current Page <b id="pageNumber">@Model.pageNumber</b> <button type="button" class="btn btn-link" onClick="findAuctions(@Model.pageNumber)">Next ></button></span>
         </div>
 }
 </div>

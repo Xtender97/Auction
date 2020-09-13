@@ -268,5 +268,8 @@ namespace Projekat.Controllers
             await this.context.SaveChangesAsync();
             return RedirectToAction(nameof(UserController.getAuctionsToApprove), "User");
         }
+
+
+     
     }
 }

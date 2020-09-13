@@ -36,9 +36,15 @@ namespace Projekat.Factories{
         {
 
             ClaimsIdentity identity = await base.GenerateClaimsAsync(user);
+
+        
             identity.AddClaim (
                 new Claim("fullName", user.firstName + " " + user.lastName)
             );
+
+            identity.AddClaim ( new Claim("tokens", user.tokenCount.ToString()));
+
+           
 
             var roles = await this.userManager.GetRolesAsync( user);
             foreach (var role in roles){
@@ -46,6 +52,8 @@ namespace Projekat.Factories{
                     new Claim (ClaimTypes.Role, role)
                 );
             }
+
+            
 
             return identity;
             

@@ -25,6 +25,29 @@ function findAuctions(pageNumber){
 }
 
 
+
+function addOrder(details) {
+    let package = document.querySelector('input[name="package"]:checked').value;
+
+     $.ajax ({
+        type: "GET",
+        url: "/Payment/addPayment?amount=" + package,
+        dataType: "text",
+        success: function ( response ) {
+            console.log(response);
+            let oldTokens = $('#tokeni').text();
+            oldTokens = +oldTokens + +package;
+            $('#tokeni').text(oldTokens);
+        },
+        error: function ( response ) {
+            console.log(response);
+         }
+    })
+
+    
+}
+
+
 function updateTimer ( string ) {
     var array = string.split ( ":" )
     var hours = parseInt ( array[0] )
