@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Projekat.Models.Database;
 using Projekat.Models.View;
 
@@ -42,9 +43,10 @@ namespace Projekat.Controllers
                 auctionsQuery = auctionsQuery.Where(item => item.name.Contains(keyWord));
             }
 
+            State? stateType = null;
+
             if (state != "ALL")
             {
-                State? stateType = null;
                 switch (state)
                 {
                     case "DRAFT":
@@ -80,44 +82,84 @@ namespace Projekat.Controllers
             List<Auction> auctions = auctionsQuery.Take(pageSize).ToList();
 
             List<string> images = new List<string>();
-            List<string> timers = new List<string>(); 
+            List<string> timers = new List<string>();
+            List<string> lastBidders = new List<string>();
+            List<Auction> modifideAuctions = new List<Auction>();
 
             foreach (Auction auction in auctions)
             {
-                string image = Convert.ToBase64String(auction.image);
-                images.Add(image);
-                if(auction.openingDate < DateTime.Now && auction.state == State.DRAFT ){
+
+                if (auction.openingDate <= DateTime.Now && auction.state == State.READY)
+                {
                     auction.state = State.OPEN;
                     this.context.auction.Update(auction);
+                    if (stateType != null && auction.state != stateType) {
+                        continue;
+                    }
                 }
-                if(auction.closingDate < DateTime.Now && auction.state == State.OPEN){
+                Bid lastBid = this.context.bid.Where(bid => bid.auctionId == auction.id).Include(bid => bid.User).OrderByDescending(bid => bid.timestamp).FirstOrDefault();
+                if (auction.closingDate <= DateTime.Now && auction.state == State.OPEN)
+                {
+
                     // MAKE IT SOLD OR EXPIRED DEPENDING ON THE BIDDING
+                    if (lastBid == null)
+                    {
+                        auction.state = State.EXPIRED;
+                    }
+                    else
+                    {
+                        auction.state = State.SOLD;
+                    }
+                    this.context.auction.Update(auction);
+                    if (stateType != null && auction.state != stateType) {
+                        continue;
+                    }
+
+
                 }
-                if(auction.state == State.OPEN){ 
+
+                modifideAuctions.Add(auction);
+
+                if (lastBid == null)
+                {
+                    lastBidders.Add(null);
+                }
+                else
+                {
+                    lastBidders.Add(lastBid.User.UserName);
+                }
+
+                string image = Convert.ToBase64String(auction.image);
+                images.Add(image);
+
+                if (auction.state == State.OPEN)
+                {
                     TimeSpan difference = auction.closingDate - DateTime.Now;
-                    string strDiff = String.Format("{0}:{1}:{2}", 
-                        difference.Days *24 + difference.Hours, 
-                        difference.Minutes,                     
+                    string strDiff = String.Format("{0}:{1}:{2}",
+                        difference.Days * 24 + difference.Hours,
+                        difference.Minutes,
                         difference.Seconds);
 
                     timers.Add(strDiff);
                 }
-                else {
+                else
+                {
                     timers.Add(null);
                 }
             }
 
-            
 
 
-            this.context.SaveChangesAsync();
+
+            this.context.SaveChanges();
 
             var model = new MyAuctionsModel();
 
-            model.myAuctions = auctions;
+            model.myAuctions = modifideAuctions;
             model.images = images;
             model.pageNumber = pageNumber.ToString();
             model.timers = timers;
+            model.lastBidders = lastBidders;
             return PartialView(model);
         }
     }

@@ -38,7 +38,14 @@ else{
                 }
                 else 
                 {
+                    if (item.state == State.EXPIRED || @item.state == State.SOLD){
+                        timer = "Finished at " + item.closingDate.ToString();
+                    }
+                    else {
+
+                    
                     timer = "Opens at " + item.openingDate.ToString();
+                    }
                 };
 
             
@@ -58,6 +65,9 @@ else{
                         </div>
                         <div class="d-flex justify-content-center">
                              <p class="card-text"><span class="timer">@timer</span></p>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                             <p class="card-text">@Model.lastBidders.ElementAt(index)</p>
                         </div>
                        
                             

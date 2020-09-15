@@ -57,6 +57,14 @@ function updateTimer ( string ) {
     seconds = timeInSeconds % 60
     minutes = Math.floor ( timeInSeconds / 60 ) % 60
     hours = Math.floor ( timeInSeconds / 3600 )
+
+    if (seconds == 0 && minutes == 0 && hours == 0){
+        let pageNumber = $("#pageNumber").text();
+        pageNumber--;
+        findAuctions(pageNumber);
+        console.log("update...");
+        return "FINISHED";
+    }
     if ( seconds < 10 ) {
         seconds = "0" + seconds
     }
@@ -73,7 +81,7 @@ function timer(){
     const update = function updateTimers(){
         let listOfTimers = $(".timer").each(
             function(index)  {
-                if(!$(this).text().includes("Opens")){
+                if(!$(this).text().includes("Opens") && !$(this).text().includes("Finished")){
                     let timer = updateTimer($(this).text());
                     $(this).text(timer);
                 }

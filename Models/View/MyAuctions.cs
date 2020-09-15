@@ -8,6 +8,7 @@ namespace Projekat.Models.View {
         public IList<string> images;
         public string pageNumber { get; set;}
         public IList<string> timers;
+        public IList<string> lastBidders;
 
     }
 }
