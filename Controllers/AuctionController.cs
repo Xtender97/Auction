@@ -268,6 +268,27 @@ namespace Projekat.Controllers
             await this.context.SaveChangesAsync();
             return RedirectToAction(nameof(UserController.getAuctionsToApprove), "User");
         }
+    
+
+        public async Task<IActionResult> WonAuctions(){ 
+            MyAuctionsModel model = new MyAuctionsModel();
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+            List<Auction> auctions= this.context.auction.Where(a => a.winner == loggedInUser.Id).ToList();
+
+            List<string> images = new List<string>();
+
+            foreach (Auction auction in auctions){
+                 string image = Convert.ToBase64String(auction.image);
+                images.Add(image);
+            }
+
+            model.myAuctions = auctions;
+            model.images = images;
+
+
+
+            return View(model);
+        }
 
 
      

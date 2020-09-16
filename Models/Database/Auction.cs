@@ -51,6 +51,8 @@ namespace Projekat.Models.Database
         [Required]
         public string userId { get; set; }
 
+        public string winner { get; set; }
+
         public ICollection<Bid> Bids { get; set; }
 
 

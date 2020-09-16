@@ -1,0 +1,11 @@
+@model Projekat.Models.View.DetailsModel
+@{ 
+    ViewData["Title"] = "Details";
+}
+@{ await Html.RenderPartialAsync ( "SignalR" ); }
+
+<div class="col-xl-12 mt-5" id="content">
+
+    @{await Html.RenderPartialAsync("Details", @Model );}
+    
+</div>

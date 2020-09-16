@@ -34,11 +34,13 @@
         @* <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Register">Welcome @fullName</a></li> *@
         <li class="nav-item"><a  id="tokeni" class="nav-link" >@tokens</a></li>
         <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Logout">Log Out</a></li>
+        <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Register" asp-route-isUpdate="update">Account</a></li>
+
 
 
     }
     else{
-        <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Register">Register</a></li>
+        <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Register" asp-route-isUpdate="not">Register</a></li>
         <li class="nav-item"><a  class="nav-link" asp-controller="User" asp-action="Login">Login</a></li>
 
     }

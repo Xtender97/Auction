@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Projekat.Controllers;
 
 namespace Projekat.Models.View {
-    public class RegisterModel {
+    public class UpdateModel {
         [Required]
         [Display(Name = "First Name")]
         public string firstName { get; set; }
@@ -19,13 +19,11 @@ namespace Projekat.Models.View {
         [Display(Name = "Email")]
         [EmailAddress]
         [DataType(DataType.EmailAddress)]
-        [Remote (controller: "User", action: nameof(UserController.isEmailUnique))]
         public string email { get; set; }
 
         [Required]
         [Display(Name = "Username")]
         [RegularExpression(@"^.{6,}$", ErrorMessage = "Username has to have more then 5 characters!")]
-        [Remote (controller: "User", action: nameof(UserController.isUserNameUnique))]
         public string username { get; set; }
 
         [Required]

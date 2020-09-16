@@ -1,13 +1,8 @@
+@{ 
+    ViewData["Title"] = "Won Auctions";
+}
 @using Projekat.Models.Database
 @model Projekat.Models.View.MyAuctionsModel
-
-<script>
-
-    window.onclose = clearAll(window);
-
-    window.onload = timer();
-
-</script>
 
 <div>
 
@@ -32,21 +27,10 @@ else{
 
             }
             string timer = "";
-            @if(Model.timers.ElementAt(index) != null) 
-                {
-                    timer = Model.timers.ElementAt(index);
-                }
-                else 
-                {
-                    if (item.state == State.EXPIRED || @item.state == State.SOLD){
-                        timer = "Finished at " + item.closingDate.ToString();
-                    }
-                    else {
-
-                    
-                    timer = "Opens at " + item.openingDate.ToString();
-                    }
-                };
+            if (item.state == State.EXPIRED || @item.state == State.SOLD){
+                timer = "Finished at " + item.closingDate.ToString();
+            }
+                
 
             
             <div class="col-xl-3 align-items-stretch d-flex">
@@ -66,17 +50,12 @@ else{
                         <div class="d-flex justify-content-center">
                              <p class="card-text"><span class="timer">@timer</span></p>
                         </div>
-                        <div class="d-flex justify-content-center">
-                             <p class="card-text">@Model.lastBidders.ElementAt(index)</p>
-                        </div>
-                       
                             
 
                     </div>
                     <div class="card-footer">
                         <div class="d-flex justify-content-around">
                             <a class="btn btn-success" asp-controller="Search" asp-action="DetailsPage" asp-route-id="@item.id">Details</a>
-                            <button onClick="bid(@item.id, @item.priceIncrement, @item.startPrice, @Model.pageNumber)" class="btn btn-success">Bid</button>
                         </div>
                         <div class="auctionId" style="display:none">@item.id</div>
 

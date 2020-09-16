@@ -1,6 +1,6 @@
-@model Projekat.Models.View.RegisterModel
+@model Projekat.Models.View.UpdateModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Update account";
 }
 @section Scripts {
     @{ await Html.RenderPartialAsync ( "_ValidationScriptsPartial" ); }
@@ -8,11 +8,11 @@
 
 
 <h1>
-    Register
+    Update account
 </h1>
 <div class="row"> 
     <div class="col-xl-4">
-        <form asp-action="Register" asp-controller="User">
+        <form asp-action="Update" asp-controller="User">
             <div asp-validation-summary="ModelOnly" class=" text-danger"></div>
             <div class="form-group">
                 <label asp-for="firstName" class="controll-label"></label>
@@ -64,7 +64,7 @@
                 <span  asp-validation-for="confirmPassword" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Register">
+                <input type="submit" class="btn btn-primary" value="Update">
             </div>
         </form>
     </div>

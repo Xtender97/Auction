@@ -89,16 +89,17 @@ namespace Projekat.Controllers
             foreach (Auction auction in auctions)
             {
 
-                if (auction.openingDate <= DateTime.Now && auction.state == State.READY)
+                if (auction.openingDate <= DateTime.Now.AddSeconds(1) && auction.state == State.READY)
                 {
                     auction.state = State.OPEN;
                     this.context.auction.Update(auction);
-                    if (stateType != null && auction.state != stateType) {
+                    if (stateType != null && auction.state != stateType)
+                    {
                         continue;
                     }
                 }
                 Bid lastBid = this.context.bid.Where(bid => bid.auctionId == auction.id).Include(bid => bid.User).OrderByDescending(bid => bid.timestamp).FirstOrDefault();
-                if (auction.closingDate <= DateTime.Now && auction.state == State.OPEN)
+                if (auction.closingDate <= DateTime.Now.AddSeconds(1) && auction.state == State.OPEN)
                 {
 
                     // MAKE IT SOLD OR EXPIRED DEPENDING ON THE BIDDING
@@ -109,9 +110,11 @@ namespace Projekat.Controllers
                     else
                     {
                         auction.state = State.SOLD;
+                        auction.winner = lastBid.UserId;
                     }
                     this.context.auction.Update(auction);
-                    if (stateType != null && auction.state != stateType) {
+                    if (stateType != null && auction.state != stateType)
+                    {
                         continue;
                     }
 
@@ -162,5 +165,130 @@ namespace Projekat.Controllers
             model.lastBidders = lastBidders;
             return PartialView(model);
         }
+
+        public IActionResult DetailsPage(string id)
+        {
+
+            Auction auction = this.context.auction.Where(a => a.id == int.Parse(id)).FirstOrDefault();
+            List<Bid> bids = this.context.bid.Where(b => b.auctionId == int.Parse(id)).Include(bid => bid.User).Take(10).OrderByDescending(bid => bid.timestamp).ToList();
+
+            if (auction.openingDate <= DateTime.Now.AddSeconds(1) && auction.state == State.READY)
+            {
+                auction.state = State.OPEN;
+                this.context.auction.Update(auction);
+            }
+
+            if (auction.closingDate <= DateTime.Now.AddSeconds(1) && auction.state == State.OPEN)
+            {
+
+                // MAKE IT SOLD OR EXPIRED DEPENDING ON THE BIDDING
+                if (bids.Count <= 0)
+                {
+                    auction.state = State.EXPIRED;
+                }
+                else
+                {
+                    auction.winner = bids.First().UserId;
+                    auction.state = State.SOLD;
+                }
+                this.context.auction.Update(auction);
+
+            }
+
+            this.context.SaveChanges();
+            DetailsModel model = new DetailsModel();
+
+            model.auction = auction;
+            model.image = Convert.ToBase64String(auction.image);
+            model.timer = null;
+
+            if (auction.state == State.OPEN)
+            {
+                TimeSpan difference = auction.closingDate - DateTime.Now;
+                string strDiff = String.Format("{0}:{1}:{2}",
+                    difference.Days * 24 + difference.Hours,
+                    difference.Minutes,
+                    difference.Seconds);
+
+                model.timer = strDiff;
+            }
+
+
+            List<string> usernames = new List<string>();
+
+            foreach (var bid in bids)
+            {
+                usernames.Add(bid.User.UserName);
+            }
+
+            model.bidders = usernames;
+
+            return View(model);
+
+
+        }
+
+        public IActionResult ReloadDetailsPage(string id)
+        {
+            Auction auction = this.context.auction.Where(a => a.id == int.Parse(id)).FirstOrDefault();
+            List<Bid> bids = this.context.bid.Where(b => b.auctionId == int.Parse(id)).Include(bid => bid.User).OrderByDescending(bid => bid.timestamp).Take(10).ToList();
+
+            if (auction.openingDate <= DateTime.Now.AddSeconds(1) && auction.state == State.READY)
+            {
+                auction.state = State.OPEN;
+                this.context.auction.Update(auction);
+            }
+
+            if (auction.closingDate <= DateTime.Now.AddSeconds(1) && auction.state == State.OPEN)
+            {
+
+                // MAKE IT SOLD OR EXPIRED DEPENDING ON THE BIDDING
+                if (bids.Count <= 0)
+                {
+                    auction.state = State.EXPIRED;
+                }
+                else
+                {
+                    auction.winner = bids.First().UserId;
+                    auction.state = State.SOLD;
+                }
+                this.context.auction.Update(auction);
+
+            }
+
+            this.context.SaveChanges();
+            DetailsModel model = new DetailsModel();
+
+            model.auction = auction;
+            model.image = Convert.ToBase64String(auction.image);
+            model.timer = null;
+
+            if (auction.state == State.OPEN)
+            {
+                TimeSpan difference = auction.closingDate - DateTime.Now;
+                string strDiff = String.Format("{0}:{1}:{2}",
+                    difference.Days * 24 + difference.Hours,
+                    difference.Minutes,
+                    difference.Seconds);
+
+                model.timer = strDiff;
+            }
+
+
+            List<string> usernames = new List<string>();
+
+            foreach (var bid in bids)
+            {
+                usernames.Add(bid.User.UserName);
+            }
+
+            model.bidders = usernames;
+
+            return PartialView("Details", model);
+        }
+
+
     }
+
+
 }

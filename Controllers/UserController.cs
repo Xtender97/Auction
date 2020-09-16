@@ -47,6 +47,21 @@ namespace Projekat.Controllers
 
         }
 
+        public bool isEmailUniqueBool(string email)
+        {
+            bool exist = this.context.Users.Where(user => user.Email == email).Any();
+
+            if (exist)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
         public IActionResult isUserNameUnique(string username)
         {
             bool exist = this.context.Users.Where(user => user.UserName == username).Any();
@@ -58,6 +73,21 @@ namespace Projekat.Controllers
             else
             {
                 return Json(true);
+            }
+
+        }
+
+        public bool isUserNameUniqueBool(string username)
+        {
+            bool exist = this.context.Users.Where(user => user.UserName == username).Any();
+
+            if (exist)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
             }
 
         }
@@ -98,16 +128,89 @@ namespace Projekat.Controllers
                 return View(model);
             }
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(SearchController.Index), "Search");
 
 
 
         }
 
-
-        public IActionResult Register()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(UpdateModel model)
         {
-            return View();
+
+            User loggedInUser = await this.userManager.GetUserAsync(base.User);
+
+            if (loggedInUser.UserName != model.username)
+            {
+                if (!isUserNameUniqueBool(model.username))
+                {
+                    ModelState.AddModelError("", "User already taken!!!");
+                    return View(model);
+                }
+            }
+
+            if (loggedInUser.Email != model.email)
+            {
+                if (!isEmailUniqueBool(model.email))
+                {
+                    ModelState.AddModelError("", "Email already taken!!!");
+                    return View(model);
+                }
+            }
+
+            loggedInUser.PasswordHash = this.userManager.PasswordHasher.HashPassword(loggedInUser, model.password);
+
+            loggedInUser.UserName = model.username;
+            loggedInUser.NormalizedUserName = model.username.ToUpper();
+            loggedInUser.firstName = model.firstName;
+            loggedInUser.lastName = model.lastName;
+            loggedInUser.Email = model.email;
+            loggedInUser.NormalizedEmail = model.email.ToUpper();
+            loggedInUser.gender = model.gender;
+
+
+            await this.userManager.UpdateAsync(loggedInUser);
+
+            this.context.SaveChanges();
+
+            return RedirectToAction(nameof(SearchController.Index), "Search");
+
+
+        }
+
+
+        public async Task<IActionResult> Register(string isUpdate)
+        {
+
+
+
+
+            if (isUpdate == "update")
+            {
+                UpdateModel model = new UpdateModel();
+                User loggedInUser = await this.userManager.GetUserAsync(base.User);
+                User userDB = this.context.Users.Where(u => u.UserName == loggedInUser.UserName).FirstOrDefault();
+                model.username = userDB.UserName;
+                model.firstName = userDB.firstName;
+                model.lastName = userDB.lastName;
+                model.gender = userDB.gender;
+                model.email = userDB.Email;
+                model.password = userDB.PasswordHash;
+                model.confirmPassword = userDB.PasswordHash;
+                model.isUpdate = true;
+                return View("Update", model);
+
+
+            }
+            else
+            {
+                RegisterModel model = new RegisterModel();
+                model.isUpdate = false;
+                return View(model);
+
+            }
+
         }
 
 
@@ -126,8 +229,11 @@ namespace Projekat.Controllers
             {
                 return View(model);
             }
-            User user = await this.context.Users.Where(u => u.UserName == model.username).SingleAsync();
-
+            User user = await this.context.Users.Where(u => u.UserName == model.username).FirstOrDefaultAsync();
+            if(user == null){
+                ModelState.AddModelError("", "Invalid username or password");
+                return View(model);
+            }
             if (user.isDeleted)
             {
                 ModelState.AddModelError("", "Your account is deleted!");
@@ -148,7 +254,7 @@ namespace Projekat.Controllers
                 return Redirect(model.returnUrl);
             else
             {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToAction(nameof(SearchController.Index), "Search");
             }
         }
 
@@ -157,7 +263,7 @@ namespace Projekat.Controllers
         {
 
             await this.signInManager.SignOutAsync();
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(SearchController.Index), "Search");
         }
 
         [Authorize(Roles = "Admin")]
@@ -197,9 +303,10 @@ namespace Projekat.Controllers
             user.isDeleted = true;
             this.context.Users.Update(user);
 
-            List<Auction> auctions = this.context.auction.Where(a=> a.userId == id && (a.state == State.READY ||a.state == State.OPEN)).ToList();
+            List<Auction> auctions = this.context.auction.Where(a => a.userId == id && (a.state == State.READY || a.state == State.OPEN)).ToList();
 
-            foreach(Auction auction in auctions){
+            foreach (Auction auction in auctions)
+            {
                 auction.state = State.EXPIRED;
                 this.context.auction.Update(auction);
             }

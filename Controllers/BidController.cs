@@ -60,7 +60,7 @@ namespace Projekat.Controllers
             {
                 float oldPriceFormated = (float)Math.Round(float.Parse(oldPrice) * 1000f )/1000f;
                 float newPriceFormated = (float)Math.Round(lastBid.newPrice*1000f)/1000f;
-                if (newPriceFormated!= oldPriceFormated ){
+                if (Math.Abs(newPriceFormated -  oldPriceFormated) > newPriceFormated * 0.02 ){
                     return "Error: Someone bid before you!!!";
                 }
             }
